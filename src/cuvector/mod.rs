@@ -267,6 +267,11 @@ impl CuVectorDeref<f32> {
         unsafe { VectorPacked_addValue_f32(self.as_ptr(), value, self.as_mut_ptr(), self.len() as i32, stream.stream) }
     }
 
+    /// Add value to each element of the vector.
+    pub fn mul_value(&mut self, value: f32, stream: &CudaStream) {
+        unsafe { VectorPacked_mulValue_f32(self.as_ptr(), value, self.as_mut_ptr(), self.len() as i32, stream.stream) }
+    }
+
     /// Scale each element of the vector by value.
     pub fn scl(&mut self, value: f32, stream: &CudaStream) {
         unsafe { VectorPacked_scl_f32(self.as_ptr(), value, self.as_mut_ptr(), self.len() as i32, stream.stream) }

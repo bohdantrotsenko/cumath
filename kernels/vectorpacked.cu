@@ -43,6 +43,8 @@ extern "C" {
 		addValue_i32 <<<gridDim, blockDim, 0, stream>>> (vector, value, output, len);
 	}
 }
+
+
 __global__ void addValue_f32 (float* vector, float value, float* output, int len) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < len) {
@@ -58,6 +60,28 @@ extern "C" {
 		addValue_f32 <<<gridDim, blockDim, 0, stream>>> (vector, value, output, len);
 	}
 }
+
+__global__ void mulValue_f32 (float* vector, float value, float* output, int len) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if (idx < len) {
+output[idx] = vector[idx] * value;
+	}
+}
+extern "C" {
+	void VectorPacked_mulValue_f32 (float* vector, float value, float* output, int len, cudaStream_t stream) {
+		dim3 gridDim;
+		dim3 blockDim;
+		blockDim.x = 1024;
+		gridDim.x = (len + blockDim.x - 1) / blockDim.x;
+		addValue_f32 <<<gridDim, blockDim, 0, stream>>> (vector, value, output, len);
+	}
+}
+
+
+
+
+
+
 __global__ void scl_i32 (int* vector, int value, int* output, int len) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < len) {

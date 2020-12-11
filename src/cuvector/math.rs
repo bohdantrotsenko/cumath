@@ -93,6 +93,9 @@ impl CuVectorMath<f32> {
         unsafe { VectorPacked_addValue_f32(vector.as_ptr(), value, output.as_mut_ptr(), vector.len() as i32, stream.stream) }
     }
 
+    pub fn mul_value(vector: &CuVectorDeref<f32>, value: f32, output: &mut CuVectorDeref<f32>, stream: &CudaStream) {
+        unsafe { VectorPacked_mulValue_f32(vector.as_ptr(), value, output.as_mut_ptr(), vector.len() as i32, stream.stream) }
+    }
     /// output[i] = vector[i] * value
     pub fn scale(vector: &CuVectorDeref<f32>, value: f32, output: &mut CuVectorDeref<f32>, stream: &CudaStream) {
         unsafe { VectorPacked_scl_f32(vector.as_ptr(), value, output.as_mut_ptr(), vector.len() as i32, stream.stream) }
