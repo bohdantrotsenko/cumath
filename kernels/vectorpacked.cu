@@ -44,7 +44,7 @@ extern "C" {
 	}
 }
 
-
+// addValue_f32
 __global__ void addValue_f32 (float* vector, float value, float* output, int len) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < len) {
@@ -61,10 +61,12 @@ extern "C" {
 	}
 }
 
+
+// mulValue_f32
 __global__ void mulValue_f32 (float* vector, float value, float* output, int len) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < len) {
-output[idx] = vector[idx] * value;
+		output[idx] = vector[idx] * value;
 	}
 }
 extern "C" {
@@ -73,12 +75,63 @@ extern "C" {
 		dim3 blockDim;
 		blockDim.x = 1024;
 		gridDim.x = (len + blockDim.x - 1) / blockDim.x;
-		addValue_f32 <<<gridDim, blockDim, 0, stream>>> (vector, value, output, len);
+		mulValue_f32 <<<gridDim, blockDim, 0, stream>>> (vector, value, output, len);
 	}
 }
 
+// addHacky_f32
+__global__ void addHacky_f32 (float* vector, float* output, int len) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
+	// len must be a power of 2
+	// addHacky copies a sum of adjacent indiciex to destination
+	// only [len/2] is used at output
 
+	// can be further optimized
+	if (idx < len && (idx & 1)) {
+		output[idx >> 1] = vector[idx^1] + vector[idx];
+	}
+}
+
+extern "C" {
+	void VectorPacked_addHacky_f32 (float* vector, float* output, int len, cudaStream_t stream) {
+		dim3 gridDim;
+		dim3 blockDim;
+		blockDim.x = 1024;
+		gridDim.x = (len + blockDim.x - 1) / blockDim.x;
+		addHacky_f32 <<<gridDim, blockDim, 0, stream>>> (vector, output, len);
+	}
+}
+
+// maxHacky_f32
+__global__ void maxHacky_f32 (float* vector, float* output, int len) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+	// len must be a power of 2
+	// addHacky copies a bigger one of adjacent elements to destination
+	// only [len/2] is used at output
+
+	// can be further optimized
+	if (idx < len && (idx & 1)) {
+		float a = vector[idx^1];
+		float b = vector[idx];
+		if (a > b) {
+			output[idx >> 1] = a;
+		} else {
+			output[idx >> 1] = b;
+		}
+	}
+}
+
+extern "C" {
+	void VectorPacked_maxHacky_f32 (float* vector, float* output, int len, cudaStream_t stream) {
+		dim3 gridDim;
+		dim3 blockDim;
+		blockDim.x = 1024;
+		gridDim.x = (len + blockDim.x - 1) / blockDim.x;
+		maxHacky_f32 <<<gridDim, blockDim, 0, stream>>> (vector, output, len);
+	}
+}
 
 
 

@@ -11,7 +11,11 @@ extern {
     pub fn VectorPacked_init_f32(vector: *mut f32, value: f32, len: i32, stream: cudaStream_t);
     pub fn VectorPacked_addValue_i32(vector: *const i32, value: i32, output: *mut i32, len: i32, stream: cudaStream_t);
     pub fn VectorPacked_addValue_f32(vector: *const f32, value: f32, output: *mut f32, len: i32, stream: cudaStream_t);
+
     pub fn VectorPacked_mulValue_f32(vector: *const f32, value: f32, output: *mut f32, len: i32, stream: cudaStream_t);
+    pub fn VectorPacked_addHacky_f32(vector: *const f32, output: *mut f32, len: i32, stream: cudaStream_t);
+    pub fn VectorPacked_maxHacky_f32(vector: *const f32, output: *mut f32, len: i32, stream: cudaStream_t);
+
     pub fn VectorPacked_scl_i32(vector: *const i32, value: i32, output: *mut i32, len: i32, stream: cudaStream_t);
     pub fn VectorPacked_scl_f32(vector: *const f32, value: f32, output: *mut f32, len: i32, stream: cudaStream_t);
     pub fn VectorPacked_add_i32(left_op: *const i32, right_op: *const i32, output: *mut i32, len: i32, stream: cudaStream_t);

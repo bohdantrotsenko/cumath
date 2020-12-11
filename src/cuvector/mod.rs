@@ -220,18 +220,14 @@ impl<T: CuDataType> CuVectorDeref<T> {
 
     /// Clone this vector's data to host memory.
     pub fn clone_to_host(&self, data: &mut [T]) {
-        #[cfg(not(feature = "disable_checks"))] {
-            assert_eq_usize(self.len(), "self.len()", data.len(), "data.len()");
-        }
-        cuda_memcpy(data.as_mut_ptr() as *mut c_void, self.as_ptr() as *const c_void, data.len()*size_of::<T>(), cudaMemcpyKind::DeviceToHost);
+        let len = usize::min(self.len(), data.len());
+        cuda_memcpy(data.as_mut_ptr() as *mut c_void, self.as_ptr() as *const c_void, len*size_of::<T>(), cudaMemcpyKind::DeviceToHost);
     }
 
     /// Copy host memory into this vector.
     pub fn clone_from_host(&mut self, data: &[T]) {
-        #[cfg(not(feature = "disable_checks"))] {
-            assert_eq_usize(self.len(), "self.len()", data.len(), "data.len()");
-        }
-        cuda_memcpy(self.as_mut_ptr() as *mut c_void, data.as_ptr() as *const c_void, data.len()*size_of::<T>(), cudaMemcpyKind::HostToDevice);
+        let len = usize::min(self.len(), data.len());
+        cuda_memcpy(self.as_mut_ptr() as *mut c_void, data.as_ptr() as *const c_void, len*size_of::<T>(), cudaMemcpyKind::HostToDevice);
     }
 
     /// Clone device memory into this vector.
