@@ -1,4 +1,4 @@
-
+#[allow(bare_trait_objects)]
 
 use std::result::Result;
 use std::error::Error;

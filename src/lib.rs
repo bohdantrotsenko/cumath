@@ -1,5 +1,3 @@
-
-
 mod meta;
 mod cuda_core;
 mod cuvector;
@@ -11,13 +9,10 @@ pub use cuvector::*;
 pub use cumatrix::*;
 
 
-
-
 use std::fmt::Display;
 
 
 pub trait CuDataType: Clone + PartialEq + Display {
-    #[inline]
     fn zero() -> Self;
 }
 impl CuDataType for i32 {

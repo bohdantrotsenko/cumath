@@ -104,32 +104,31 @@ extern "C" {
 }
 
 // maxHacky_f32
-__global__ void maxHacky_f32 (float* vector, float* output, int len) {
+__global__ void maxHacky_f32 (float* source, float* output, int len) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
-	// len must be a power of 2
-	// addHacky copies a bigger one of adjacent elements to destination
-	// only [len/2] is used at output
+	// maxHacky_f32 copies a bigger one of adjacent elements to destination
+	// source.len >= 2 * len
 
-	// can be further optimized
-	if (idx < len && (idx & 1)) {
-		float a = vector[idx^1];
-		float b = vector[idx];
+	if (idx < len) {
+		int vidx = idx << 1;
+		float a = source[vidx];
+		float b = source[vidx ^ 1];
 		if (a > b) {
-			output[idx >> 1] = a;
+			output[idx] = a;
 		} else {
-			output[idx >> 1] = b;
+			output[idx] = b;
 		}
 	}
 }
 
 extern "C" {
-	void VectorPacked_maxHacky_f32 (float* vector, float* output, int len, cudaStream_t stream) {
+	void VectorPacked_maxHacky_f32 (float* vector2len, float* output, int len, cudaStream_t stream) {
 		dim3 gridDim;
 		dim3 blockDim;
 		blockDim.x = 1024;
 		gridDim.x = (len + blockDim.x - 1) / blockDim.x;
-		maxHacky_f32 <<<gridDim, blockDim, 0, stream>>> (vector, output, len);
+		maxHacky_f32 <<<gridDim, blockDim, 0, stream>>> (vector2len, output, len);
 	}
 }
 
